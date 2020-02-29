@@ -18,7 +18,7 @@ class ClientDatabaseProvider {
   }
   Future<Database> getDatabaseInstance() async{
     Directory directory= await getApplicationDocumentsDirectory();
-    String path= join(directory.path,'client.db');
+    String path= join(directory.path,'client.db'); // join es de PATH
     return await openDatabase(path,version: 1,
     onCreate: (Database db, int version) async{
       await db.execute("CREATE TABLE Client("
@@ -34,7 +34,7 @@ class ClientDatabaseProvider {
   Future<List<Client>>getAllClients() async{
     final db= await database;
     var response= await db.query("Client");
-    List<Client> list= response.map((c)=>Client.fromMap(c)).toList();// MAPEA TODA LA TABLA
+    List<Client> list= response.map((c)=>Client.fromMap(c)).toList();// MAPEA A JSON TODA LA TABLA
     return list;
   }
 //select solo un cliente de la bd
@@ -46,13 +46,13 @@ class ClientDatabaseProvider {
   // insert
   addClientToDatabase (Client client) async{
     final db= await database;
-    var table= await db.rawQuery("SELECT MAX(id)+1 as id FROM Client");
+    var table= await db.rawQuery("SELECT MAX(id)+1 as id FROM Client");// PODEMOS CABMIAR EL NOMBRE DE LA TABLA
     int id =table.first["id"];
     client.id=id;
     var raw= await db.insert(
-      "client", 
-      client.toMap(), // CON ESTO SE MAPEA Y SE INSERTA TODOS LOS CAMPOS DE LA TABLA
-      conflictAlgorithm: ConflictAlgorithm.replace 
+      "Client", // // PODEMOS CABMIAR EL NOMBRE DE LA TABLA
+      client.toMap(), // CON ESTO SE MAPEA Y SE INSERTA TODOS LOS CAMPOS DE LA TABLA // toMap es de client_model.dart
+      conflictAlgorithm: ConflictAlgorithm.replace // PARA QUE NO
       );
   }
 
@@ -71,7 +71,12 @@ class ClientDatabaseProvider {
   // Editar
   updateClient(Client client) async{
     final db= await database;
-    var response= await db.update("Client", client.toMap(),where: "id=?",whereArgs: [client.id]);
+    var response= await db.update(
+      "Client",
+       client.toMap(),
+       where: "id=?",
+       whereArgs: [client.id]
+       );
     return response;
   }
 
